@@ -20,15 +20,12 @@
 		<script src="scripts/bootstrap.min.js"></script>
 		<script src="scripts/editGraph.js"></script>
 		<!-- import mathjax support -->
-		<script type="text/x-mathjax-config">
-			MathJax.Hub.Config({
-				tex2jax: {inlineMath: [['$', '$'], ['\\(', '\\)']]}
-			});
-		</script>
-		<script type="text/javascript" async src="path-to-mathjax/Mathjax.js?config=Tex-AMS_CHTML"></script>
 		<script type="text/javascript" async
 			src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML" async>
 		</script>
+
+		<!-- <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_SVG" async> -->
+		<!-- </script> -->
 
 		<script type="text/javascript">
 
@@ -381,7 +378,9 @@
 			var text_offset = 10;
 			var prop_id = item+"_"+prop_name;
 			if (item=='nodes'){
-				elements_text = graph_objects.append("text").style("pointer-events", "none");
+				elements_text = graph_objects.append("foreignObject").style("pointer-events", "none")
+				.attr("x",100).attr("y",100)
+				.attr("width", 1000).attr("height", 500);
 			}
 			else if (item=='edges'){
 				var elements_text = graph_objects.append("textPath")
@@ -403,9 +402,9 @@
 			// allow the content correctly rendered by mathjax
 			.text(function(d) {return (prop_id === "nodes_description" || prop_id === "nodes_proof" || prop_id === "nodes_example1") 
 			? get_prop_value(d,prop_name,item).replace(/\\\$/g, '$') : get_prop_value(d,prop_name,item);});
-			var mathj = document.getElementsByClassName("prop_details " + prop_id);
-			// MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
-			MathJax.Hub.Queue(["Typeset", MathJax.Hub, mathj]);
+			
+			MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+			MathJax.Hub.Queue(["Typeset", MathJax.Hub, d3.select(prop_name).node()]);
 	  	}
 
 
