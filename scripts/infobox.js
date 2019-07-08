@@ -90,7 +90,7 @@ var infobox = (function(){
 	}
 	function show_element(element_label){
 		var element = d3.select(element_label);
-		element.style('display','inline');
+		style('display','inline');
 	}
 
 	function show_graph_info(){
@@ -149,9 +149,15 @@ var infobox = (function(){
  					new_info_row.append("td").text(subsubkey + ' : '+ value[subkey].properties[subsubkey]).style("font-size",_font_size);
  				}
  			} else {
- 				var new_info_row = info_table.append("tr");
- 				new_info_row.append("td").text(key).style("font-size",_font_size);
- 				new_info_row.append("td").text(value[subkey].value).style("font-size",_font_size);
+				var new_info_row = info_table.append("tr");
+				new_info_row.append("td").text(key).style("font-size",_font_size);
+				// allow the content correctly rendered by mathjax
+				if (key === "description" || key === "proof" || key === "example1") {
+					value[subkey].value = value[subkey].value.replace(/\\\$/g, '$');
+        			MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+       				MathJax.Hub.Queue(["Typeset", MathJax.Hub, value[subkey].value]);
+				}
+				new_info_row.append("td").text(value[subkey].value).style("font-size",_font_size);
  				new_info_row.append("td").text('').style("font-size",_font_size);
  			}
 		}

@@ -19,6 +19,16 @@
 		<script src="scripts/graphioGremlin.js"></script>
 		<script src="scripts/bootstrap.min.js"></script>
 		<script src="scripts/editGraph.js"></script>
+		<!-- import mathjax support -->
+		<script type="text/x-mathjax-config">
+			MathJax.Hub.Config({
+				tex2jax: {inlineMath: [['$', '$'], ['\\(', '\\)']]}
+			});
+		</script>
+		<script type="text/javascript" async src="path-to-mathjax/Mathjax.js?config=Tex-AMS_CHTML"></script>
+		<script type="text/javascript" async
+			src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML" async>
+		</script>
 
 		<script type="text/javascript">
 
@@ -211,7 +221,7 @@
 									<form>
 										<div class="form-group">
 											<label for="server_address">Server address:</label>
-											<input name="server_address" type="text" class="form-control" id="server_address" placeholder="Enter server address" value="localhost">
+											<input name="server_address" type="text" class="form-control" id="server_address" placeholder="Enter server address" value="10.110.165.244">
 											<small id="emailHelp" class="form-text text-muted">The gremlin server address with which we want to communicate.</small>
 										</div>
 										<div class="form-group">
@@ -389,8 +399,13 @@
 		elements_text.classed("prop_details",true).classed(prop_id,true)
 	  		//.attr("x", 12)
 	  		.attr("dy",function(d){return graphShapes.node_size(d)+text_base_offset+text_offset*parseInt(prop_id_nb);})
-	  		//.attr("y", ".31em")
-	  		.text(function(d){return get_prop_value(d,prop_name,item);});
+			  //.attr("y", ".31em")
+			// allow the content correctly rendered by mathjax
+			.text(function(d) {return (prop_id === "nodes_description" || prop_id === "nodes_proof" || prop_id === "nodes_example1") 
+			? get_prop_value(d,prop_name,item).replace(/\\\$/g, '$') : get_prop_value(d,prop_name,item);});
+			var mathj = document.getElementsByClassName("prop_details " + prop_id);
+			// MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+			MathJax.Hub.Queue(["Typeset", MathJax.Hub, mathj]);
 	  	}
 
 
