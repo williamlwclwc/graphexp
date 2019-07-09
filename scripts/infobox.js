@@ -133,6 +133,15 @@ var infobox = (function(){
 	 			new_info_row.append("td").text("")
 			}
 		}
+		// for test
+		info_table.append("td").text('comment').style("font-size",_font_size);
+		info_table.append("td").append("textarea").text('').style("font-size",_font_size)
+		.attr("cols", 15).attr("rows", 10);
+		info_table.append("td").append("button")
+		.attr("id", "commentButton")
+		.attr("onclick", "changeButtonText()")
+		.attr("width", 50).attr("height", 50)
+		.text("Edit");
 	}
 
 	function _display_vertex_properties(key,value,info_table) {
@@ -157,8 +166,15 @@ var infobox = (function(){
         			MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
        				MathJax.Hub.Queue(["Typeset", MathJax.Hub, value[subkey].value]);
 				}
-				new_info_row.append("td").text(value[subkey].value).style("font-size",_font_size);
- 				new_info_row.append("td").text('').style("font-size",_font_size);
+				// allow users to comment current node/edge
+				if(key === "comment") {
+					new_info_row.append("td").text('').style("font-size",_font_size);
+					new_info_row.append("td").append("button");
+				}
+				else {
+					new_info_row.append("td").text(value[subkey].value).style("font-size",_font_size);
+				 	new_info_row.append("td").text('').style("font-size",_font_size);
+				}
  			}
 		}
 	}
@@ -172,3 +188,16 @@ var infobox = (function(){
 		show_element : show_element
 	};
 })();
+
+// used for comment section
+function changeButtonText() {
+	element = document.getElementById('commentButton');
+	if (element.innerHTML.match("Edit"))
+	{
+		element.innerHTML = "Save";
+	}
+	else
+	{
+		element.innerHTML = "Edit";
+	}
+}
