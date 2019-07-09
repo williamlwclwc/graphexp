@@ -61,6 +61,7 @@ th, td
 	vertical-align: top;
 	text-align: left;
 	border-bottom: 1px solid #ddd;
+	max-width: 120px;
 }
 
 a:link { color: royalblue; }
@@ -176,12 +177,14 @@ Layout styles
 .right_bar {
 	position: absolute;
     right: 0;
-    top: 56px;
-    max-width: 275px;
+	max-width: 475px;
+	max-height: 100%;
     background-color: #fff;
     padding: 10px;
     border-bottom-left-radius: 15px;
-    padding-left: 15px;
+	padding-left: 15px;
+	overflow: auto;
+	padding-top: 61px;
 }
 
 .left_bar_edit {

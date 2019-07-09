@@ -133,9 +133,10 @@ var infobox = (function(){
 	 			new_info_row.append("td").text("")
 			}
 		}
-		// for test
+		// for test: add comment section
 		info_table.append("td").text('comment').style("font-size",_font_size);
 		info_table.append("td").append("textarea").text('').style("font-size",_font_size)
+		.attr("id", "commentText").attr("readonly", "readonly")
 		.attr("cols", 15).attr("rows", 10);
 		info_table.append("td").append("button")
 		.attr("id", "commentButton")
@@ -168,8 +169,15 @@ var infobox = (function(){
 				}
 				// allow users to comment current node/edge
 				if(key === "comment") {
-					new_info_row.append("td").text('').style("font-size",_font_size);
-					new_info_row.append("td").append("button");
+					new_info_row.append("td").text('comment').style("font-size",_font_size);
+					new_info_row.append("td").append("textarea").text('').style("font-size",_font_size)
+					.attr("id", "commentText").attr("readonly", "readonly")
+					.attr("cols", 15).attr("rows", 10);
+					new_info_row.append("td").append("button")
+					.attr("id", "commentButton")
+					.attr("onclick", "changeButtonText()")
+					.attr("width", 50).attr("height", 50)
+					.text("Edit");
 				}
 				else {
 					new_info_row.append("td").text(value[subkey].value).style("font-size",_font_size);
@@ -191,13 +199,17 @@ var infobox = (function(){
 
 // used for comment section
 function changeButtonText() {
-	element = document.getElementById('commentButton');
-	if (element.innerHTML.match("Edit"))
+	btnComment = document.getElementById("commentButton");
+	textComment = document.getElementById("commentText");
+	if (btnComment.innerHTML.match("Edit"))
 	{
-		element.innerHTML = "Save";
+		btnComment.innerHTML = "Save";
+		textComment.readOnly = false;
 	}
 	else
 	{
-		element.innerHTML = "Edit";
+		btnComment.innerHTML = "Edit";
+		// save content to DB
+		textComment.readOnly = true;
 	}
 }
