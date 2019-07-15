@@ -78,7 +78,7 @@ var infobox = (function(){
 		for (var key in data){
 			var info_row = table_body.append("tr");
 	 		var key_text = info_row.append("td").text(key).style("font-size",_font_size);
-	 		var value_text = info_row.append("td").text(data[key]).style("font-size",_font_size);
+	 		var value_text = info_row.append("td").attr("id", "selected_id").text(data[key]).style("font-size",_font_size);
 	 		if (type=="bold") {
 	 			key_text.style('font-weight','bolder');}
 		}
@@ -127,22 +127,34 @@ var infobox = (function(){
 		}
 		else {
 		 	for (var key in d.properties){
-		 		var new_info_row = info_table.append("tr");
+				var new_info_row = info_table.append("tr");
+				if(key === "note") {
+					new_info_row.append("td").text('note').style("font-size",_font_size);
+					new_info_row.append("td").append("textarea").text(d.properties[key]).style("font-size",_font_size)
+					.attr("id", "commentText").attr("readonly", "readonly")
+					.attr("cols", 15).attr("rows", 10);
+					new_info_row.append("td").append("button")
+					.attr("id", "commentButton")
+					.attr("onclick", "changeButtonText()")
+					.attr("width", 50).attr("height", 50)
+					.text("Edit");
+				} else {
 	 			new_info_row.append("td").text(key);
 	 			new_info_row.append("td").text(d.properties[key]);
-	 			new_info_row.append("td").text("")
+				new_info_row.append("td").text("");
+				}
 			}
 		}
 		// for test: add comment section
-		info_table.append("td").text('comment').style("font-size",_font_size);
-		info_table.append("td").append("textarea").text('').style("font-size",_font_size)
-		.attr("id", "commentText").attr("readonly", "readonly")
-		.attr("cols", 15).attr("rows", 10);
-		info_table.append("td").append("button")
-		.attr("id", "commentButton")
-		.attr("onclick", "changeButtonText()")
-		.attr("width", 50).attr("height", 50)
-		.text("Edit");
+		// info_table.append("td").text('comment').style("font-size",_font_size);
+		// info_table.append("td").append("textarea").text('').style("font-size",_font_size)
+		// .attr("id", "commentText").attr("readonly", "readonly")
+		// .attr("cols", 15).attr("rows", 10);
+		// info_table.append("td").append("button")
+		// .attr("id", "commentButton")
+		// .attr("onclick", "changeButtonText()")
+		// .attr("width", 50).attr("height", 50)
+		// .text("Edit");
 	}
 
 	function _display_vertex_properties(key,value,info_table) {
@@ -160,6 +172,7 @@ var infobox = (function(){
  				}
  			} else {
 				var new_info_row = info_table.append("tr");
+				// console.log(value[subkey].value)
 				new_info_row.append("td").text(key).style("font-size",_font_size);
 				// allow the content correctly rendered by mathjax
 				if (key === "description" || key === "proof" || key === "example1") {
@@ -168,9 +181,9 @@ var infobox = (function(){
        				MathJax.Hub.Queue(["Typeset", MathJax.Hub, value[subkey].value]);
 				}
 				// allow users to comment current node/edge
-				if(key === "comment") {
-					new_info_row.append("td").text('comment').style("font-size",_font_size);
-					new_info_row.append("td").append("textarea").text('').style("font-size",_font_size)
+				if(key === "note") {
+					// new_info_row.append("td").text('note').style("font-size",_font_size);
+					new_info_row.append("td").append("textarea").text(value[subkey].value).style("font-size",_font_size)
 					.attr("id", "commentText").attr("readonly", "readonly")
 					.attr("cols", 15).attr("rows", 10);
 					new_info_row.append("td").append("button")
@@ -197,8 +210,14 @@ var infobox = (function(){
 	};
 })();
 
+// if ID contains only digits
+function isVertex(str){
+	return !/\D/.test(str);
+}
+
 // used for comment section
 function changeButtonText() {
+	
 	btnComment = document.getElementById("commentButton");
 	textComment = document.getElementById("commentText");
 	if (btnComment.innerHTML.match("Edit"))
@@ -209,7 +228,24 @@ function changeButtonText() {
 	else
 	{
 		btnComment.innerHTML = "Edit";
+
 		// save content to DB
+		propertyName = "note";
+		propertyValue = document.getElementById("commentText").value;
+		var selected_id = document.getElementById('selected_id').innerHTML;
+		console.log(selected_id)
+		if(isVertex(selected_id) === true) {
+			var gremlin_query = "g.V('"+selected_id+"')";
+		} else {
+			var gremlin_query = "g.E('"+selected_id+"')"
+		}
+		gremlin_query = gremlin_query+".property('"+propertyName+"' , '"+propertyValue+"')"
+		console.log(gremlin_query)
+		var message=""
+		graphioGremlin.send_to_server(gremlin_query, 'editGraph', null, message);
+		console.log("Edit Comment")
+		window.alert("Refresh the page or search again to see your new comment")
+
 		textComment.readOnly = true;
 	}
 }
